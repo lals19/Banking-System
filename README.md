@@ -173,9 +173,9 @@ Possible future upgrades:
 
 # Author
 
-**Bisrat Tibebu**
-**Tsyon Yohannes**
-**Rihanna Abrham**
+**Bisrat Tibebu**,
+**Tsyon Yohannes**,
+**Rihanna Abrham**,
 **Kidus Yared**
 
 ---
