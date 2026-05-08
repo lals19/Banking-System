@@ -1,5 +1,7 @@
 #include <iostream>
 #include <string>
+#include <fstream>
+#include <sstream>
 using namespace std;
 
 struct Transaction {
@@ -57,10 +59,101 @@ private:
         }
     }
 
+    void insertAccount(Account* newAcc) {
+        if (head == nullptr) {
+            head = newAcc;
+        } else {
+            Account* current = head;
+            while (current->next != nullptr)
+                current = current->next;
+            current->next = newAcc;
+        }
+    }
+
 public:
     Bank() {
         head       = nullptr;
         nextAccNum = 1001;
+    }
+
+    void saveToFile() {
+        ofstream file("accounts.txt");
+        if (!file.is_open()) {
+            cout << "  * Error: Could not open file for saving.\n";
+            return;
+        }
+
+        file << nextAccNum << "\n";
+
+        Account* current = head;
+        while (current != nullptr) {
+            file << "ACCOUNT\n";
+            file << current->accountNumber << "\n";
+            file << current->ownerName     << "\n";
+            file << current->balance       << "\n";
+
+            Transaction* t = current->transactionHead;
+            while (t != nullptr) {
+                file << "TRANSACTION\n";
+                file << t->type   << "\n";
+                file << t->amount << "\n";
+                t = t->next;
+            }
+
+            file << "END\n";
+            current = current->next;
+        }
+
+        file.close();
+        cout << "  * Data saved to accounts.txt\n";
+    }
+
+    void loadFromFile() {
+        ifstream file("accounts.txt");
+        if (!file.is_open()) {
+            cout << "  * No saved data found. Starting fresh.\n";
+            return;
+        }
+
+        string line;
+        getline(file, line);
+        nextAccNum = stoi(line);
+
+        while (getline(file, line)) {
+            if (line == "ACCOUNT") {
+                string numStr, name, balStr;
+                getline(file, numStr);
+                getline(file, name);
+                getline(file, balStr);
+
+                int    num = stoi(numStr);
+                double bal = stod(balStr);
+
+                Account* acc = new Account(num, name, bal);
+                insertAccount(acc);
+
+                string next;
+                while (getline(file, next) && next != "END") {
+                    if (next == "TRANSACTION") {
+                        string type, amtStr;
+                        getline(file, type);
+                        getline(file, amtStr);
+                        double amt = stod(amtStr);
+                        Transaction* t = new Transaction(type, amt);
+                        if (acc->transactionHead == nullptr) {
+                            acc->transactionHead = t;
+                        } else {
+                            Transaction* cur = acc->transactionHead;
+                            while (cur->next != nullptr) cur = cur->next;
+                            cur->next = t;
+                        }
+                    }
+                }
+            }
+        }
+
+        file.close();
+        cout << "  * Data loaded from accounts.txt\n";
     }
 
     void createAccount(string name, double initialDeposit) {
@@ -71,18 +164,12 @@ public:
 
         Account* newAcc = new Account(nextAccNum, name, initialDeposit);
         nextAccNum++;
-
-        if (head == nullptr) {
-            head = newAcc;
-        } else {
-            Account* current = head;
-            while (current->next != nullptr)
-                current = current->next;
-            current->next = newAcc;
-        }
+        insertAccount(newAcc);
 
         if (initialDeposit > 0)
             addTransaction(newAcc, "Initial Deposit", initialDeposit);
+
+        saveToFile();
 
         cout << "\n  * Account Created Successfully!\n";
         cout << "  ----------------------------------\n";
@@ -127,6 +214,7 @@ public:
         cout << "  ----------------------------------\n";
 
         delete current;
+        saveToFile();
     }
 
     void deposit(int accNum, double amount) {
@@ -143,6 +231,7 @@ public:
 
         acc->balance += amount;
         addTransaction(acc, "Deposit", amount);
+        saveToFile();
 
         cout << "\n  * Deposit Successful!\n";
         cout << "  ----------------------------------\n";
@@ -170,6 +259,7 @@ public:
 
         acc->balance -= amount;
         addTransaction(acc, "Withdrawal", amount);
+        saveToFile();
 
         cout << "\n  * Withdrawal Successful!\n";
         cout << "  ----------------------------------\n";
@@ -207,8 +297,10 @@ public:
         fromAcc->balance -= amount;
         toAcc->balance   += amount;
 
-        addTransaction(fromAcc, "Transfer Out to Acc#"   + to_string(toAccNum),   amount);
-        addTransaction(toAcc,   "Transfer In from Acc#"  + to_string(fromAccNum), amount);
+        addTransaction(fromAcc, "Transfer Out to Acc#"  + to_string(toAccNum),   amount);
+        addTransaction(toAcc,   "Transfer In from Acc#" + to_string(fromAccNum), amount);
+
+        saveToFile();
 
         cout << "\n  * Transfer Successful!\n";
         cout << "  ----------------------------------\n";
@@ -302,8 +394,8 @@ public:
 
 void showMenu() {
     cout << "\n  **********************************\n";
-    cout << "  *  BANKING SYSTEM                   *\n";
-    cout << "  *************************************\n";
+    cout << "  *  BANKING SYSTEM (Linked List) *\n";
+    cout << "  **********************************\n";
     cout << "  - 1. Create Account\n";
     cout << "  - 2. Delete Account\n";
     cout << "  - 3. Deposit\n";
@@ -319,6 +411,13 @@ void showMenu() {
 
 int main() {
     Bank bank;
+
+    cout << "\n  **********************************\n";
+    cout << "  *  BANKING SYSTEM  *\n";
+    cout << "  **********************************\n";
+
+    bank.loadFromFile();
+ 
     int choice;
 
     do {
