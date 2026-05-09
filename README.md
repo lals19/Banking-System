@@ -24,15 +24,19 @@ This project allows users to:
 - Automatic account number generation
 - Linked list implementation for accounts and transactions
 - Input validation and error handling
+- Data is stored permanently using file handling
+- Accounts and transactions are saved even after closing the program
+- Automatic loading of saved data when the program starts
 
 ---
-
 # Technologies Used
 
 - C++
 - Object-Oriented Programming (OOP)
 - Linked Lists
+- File Handling
 - Console-based User Interface
+
 
 ---
 
@@ -162,7 +166,6 @@ Balance        : $500
 # Future Improvements
 
 Possible future upgrades:
-- File handling for permanent storage
 - Password protection
 - Admin panel
 - Interest calculation

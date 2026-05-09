@@ -393,9 +393,9 @@ public:
 };
 
 void showMenu() {
-    cout << "\n  **********************************\n";
-    cout << "  *  BANKING SYSTEM (Linked List) *\n";
-    cout << "  **********************************\n";
+    cout << "\n  ************************************\n";
+    cout << "  *     BANKING SYSTEM                 *\n";
+    cout << "  *************************************\n";
     cout << "  - 1. Create Account\n";
     cout << "  - 2. Delete Account\n";
     cout << "  - 3. Deposit\n";
@@ -413,7 +413,7 @@ int main() {
     Bank bank;
 
     cout << "\n  **********************************\n";
-    cout << "  *  BANKING SYSTEM  *\n";
+    cout << "  *  BANKING SYSTEM                    *\n";
     cout << "  **********************************\n";
 
     bank.loadFromFile();

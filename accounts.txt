@@ -1,0 +1,17 @@
+1003
+ACCOUNT
+1001
+nahom
+1000
+TRANSACTION
+Initial Deposit
+1000
+END
+ACCOUNT
+1002
+fitsum
+120
+TRANSACTION
+Initial Deposit
+120
+END
